@@ -8,3 +8,7 @@ SoundKlau adds an extra button to a track's SoundCloud page to download it. Even
 
 SoundKlau also adds availabe information right into the ID3-tags of the mp3 file! The artist's name, title of the track, genre (if available), release date and even the cover displayed on the SoundCloud page!
 
+### Installation
+Download the [latest version of the extension](https://github.com/JGerdes/SoundKlau/raw/master/build/soundklau.crx). Open `chrome://extensions/` in Chrome and drag'n'drop the `soundklau.crx` file there.
+
+
