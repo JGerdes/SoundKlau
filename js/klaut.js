@@ -77,15 +77,32 @@
 	buttonContainer.appendChild(downloadButton);
 
 	fetchSoundFromUrl(document.location.href, function(result){
+		console.log(result.info);
+		if(result.info.artwork_url !== undefined && result.info.artwork_url !== null){
+			var coverUrl = result.info.artwork_url.replace("large", "original");
+			downloadInBufferArray(coverUrl, function(cover){
+				result.cover = cover;
+				processTagsAndDownload(result);
+			});
+		}else{
+			processTagsAndDownload(result);
+		}
+		
+	});
+
+
+	function processTagsAndDownload(result){
 		var writer = new ID3Writer(result.data);
 		writer.setFrame('TIT2', result.info.title);
+		if(result.cover !== undefined){
+			writer.setFrame('APIC', result.cover);
+		}
 		writer.addTag();
 		downloadButton.addEventListener('click', function(){
-			console.log(result.info);
 			var url = writer.getURL();
 			download(url, result.info.title + ".mp3");
 		});
-	});
+	}
 
 
 
