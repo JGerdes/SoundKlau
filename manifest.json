@@ -7,7 +7,8 @@
 
    "content_scripts": [{
     "matches": ["*://soundcloud.com/*"],
-    "css":["css/klaut.css"]
+    "css":["css/klaut.css"],
+    "js":["js/klaut.js"]
   }],
 
   "background": {
