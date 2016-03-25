@@ -10,12 +10,11 @@
 		d.send();
 	}
 
-	function downloadInBlob(url, mimeType, callback){
+	function downloadInBufferArray(url, callback){
 		var d = new XMLHttpRequest();
 		d.responseType = "arraybuffer";
 		d.addEventListener("load", function(a) {
-			var blob = new Blob([d.response], {type: mimeType});
-			callback(blob);
+			callback(d.response);
 		});
 		d.open("GET", url, true);
 		d.send();
@@ -36,7 +35,7 @@
 			+ "&app_version=cc53575";
 		get(url, function(data){
 			var url = JSON.parse(data).http_mp3_128_url;
-			downloadInBlob(url, "audio/mpeg", function(blob){
+			downloadInBufferArray(url, function(blob){
 				var result = {};
 				result.info = trackInfo;
 				result.data = blob;
@@ -78,12 +77,17 @@
 	buttonContainer.appendChild(downloadButton);
 
 	fetchSoundFromUrl(document.location.href, function(result){
+		var writer = new ID3Writer(result.data);
+		writer.setFrame('TIT2', result.info.title);
+		writer.addTag();
 		downloadButton.addEventListener('click', function(){
 			console.log(result.info);
-			var url = window.URL.createObjectURL(result.data);
+			var url = writer.getURL();
 			download(url, result.info.title + ".mp3");
 		});
 	});
+
+
 
 	
 
