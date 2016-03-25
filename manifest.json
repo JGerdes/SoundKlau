@@ -4,12 +4,25 @@
   "name": "SoundKlau",
   "description": "Download any track directly from SoundCloud",
   "version": "0.1",
+  "icons": {
+    "16": "icon/icon16.png",
+    "64": "icon/icon64.png",
+    "128": "icon/icon128.png"
+  },
 
    "content_scripts": [{
     "matches": ["*://soundcloud.com/*"],
     "css":["css/klaut.css"],
     "js":["js/klaut.js"]
   }],
+
+  "page_action": {
+    "default_icon": {
+      "19": "icon/icon19.png",
+      "38": "icon/icon38.png"
+    },
+    "default_title": "SoundKlau"
+  },
 
   "background": {
     "scripts": ["js/background.js"]
