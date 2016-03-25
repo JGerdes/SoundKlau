@@ -14,7 +14,11 @@
 		var d = new XMLHttpRequest();
 		d.responseType = "arraybuffer";
 		d.addEventListener("load", function(a) {
-			callback(d.response);
+			if(d.status === 200){
+				callback(d.response);
+			}else{
+				callback(null);
+			}
 		});
 		d.open("GET", url, true);
 		d.send();
@@ -81,8 +85,18 @@
 		if(result.info.artwork_url !== undefined && result.info.artwork_url !== null) {
 			var coverUrl = result.info.artwork_url.replace("large", "original");
 			downloadInBufferArray(coverUrl, function(cover){
-				result.cover = cover;
-				processTagsAndDownload(result);
+				if(cover === null || cover.byteLength === 0){
+					coverUrl = result.info.artwork_url.replace("large", "t500x500");
+					downloadInBufferArray(coverUrl, function(cover){
+						if(cover !== null && cover.byteLength !== 0){
+							result.cover = cover;
+						}
+						processTagsAndDownload(result);
+					});
+				}else{
+					result.cover = cover;
+					processTagsAndDownload(result);
+				}
 			});
 		}else{
 			processTagsAndDownload(result);
