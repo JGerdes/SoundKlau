@@ -78,7 +78,7 @@
 
 	fetchSoundFromUrl(document.location.href, function(result){
 		console.log(result.info);
-		if(result.info.artwork_url !== undefined && result.info.artwork_url !== null){
+		if(result.info.artwork_url !== undefined && result.info.artwork_url !== null) {
 			var coverUrl = result.info.artwork_url.replace("large", "original");
 			downloadInBufferArray(coverUrl, function(cover){
 				result.cover = cover;
@@ -91,17 +91,66 @@
 	});
 
 
-	function processTagsAndDownload(result){
+	function processTagsAndDownload(result) {
+		var tags = assembleTags(result.info);
 		var writer = new ID3Writer(result.data);
-		writer.setFrame('TIT2', result.info.title);
-		if(result.cover !== undefined){
+		writer.setFrame('TIT2', tags.title);
+		writer.setFrame('TPE1', tags.artists);
+		if(tags.year !== undefined) {
+			writer.setFrame('TYER', tags.year);
+		}
+		if(tags.genres !== undefined) {
+			writer.setFrame('TCON', tags.genres);
+		}
+		if(tags.label !== undefined) {
+			writer.setFrame('TPUB', tags.label);
+		}
+		if(result.cover !== undefined) {
 			writer.setFrame('APIC', result.cover);
 		}
 		writer.addTag();
 		downloadButton.addEventListener('click', function(){
 			var url = writer.getURL();
-			download(url, result.info.title + ".mp3");
+			download(url, tags.artists + " - " + tags.title + ".mp3");
 		});
+	}
+
+	function assembleTags(info){
+		var result = {};
+		if(info.title.indexOf("-") !== -1){
+			var splitted = info.title.split("-");
+			result.artists = [splitted.shift().trim()];
+			result.title = splitted.join("-").trim();
+
+		}else{
+			result.title = info.title;
+			result.artists = [info.user.username];
+		}
+
+		if(info.release_year !== undefined 
+			&& info.release_year !== null){
+			result.year = info.release_year;
+		}else{
+			var domElement = document.querySelector(".fullListenHero__uploadTime.sc-type-medium > time");
+			if(domElement !== undefined){
+				var dateString = domElement.getAttribute("datetime"),
+				date = new Date(dateString);
+				result.year = date.getYear() + 1900;
+			}
+		}
+
+		if(info.genre !== undefined 
+			&& info.genre !== null){
+			result.genres = [info.genre];
+		}
+
+		if(info.label_name !== undefined 
+			&& info.label_name !== null){
+			result.label = [info.label_name];
+		}
+
+		return result;
+
 	}
 
 
