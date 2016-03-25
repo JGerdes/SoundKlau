@@ -5,5 +5,16 @@
   "description": "Download any track directly from SoundCloud",
   "version": "0.1",
 
-   
+   "content_scripts": [{
+    "matches": ["*://soundcloud.com/*"],
+    "js":["js/klaut.js"]
+  }],
+
+  "background": {
+    "scripts": ["js/background.js"]
+  },
+
+  "permissions": [
+    "*://soundcloud.com/*", "tabs", "webNavigation"
+  ]
 }
