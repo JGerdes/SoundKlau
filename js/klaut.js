@@ -10,23 +10,38 @@
 		d.send();
 	}
 
+	function downloadInBlob(url, mimeType, callback){
+		var d = new XMLHttpRequest();
+		d.responseType = "arraybuffer";
+		d.addEventListener("load", function(a) {
+			var blob = new Blob([d.response], {type: mimeType});
+			callback(blob);
+		});
+		d.open("GET", url, true);
+		d.send();
+	}
+
 	function download(file, name) {
 	    var link = document.createElement('a');
 	    link.download = name;
 	    link.href = file;
-	    console.log(link);
 	    link.click();
 	}
 
-	function fetchSoundById(trackId, callback){
+	function fetchSound(trackInfo, callback){
 		var url = "https://api.soundcloud.com/i1/tracks/"
-			+ trackId
+			+ trackInfo.id
 			+ "/streams?client_id="
 			+ CLIENT_ID 
 			+ "&app_version=cc53575";
 		get(url, function(data){
 			var url = JSON.parse(data).http_mp3_128_url;
-			callback(url);
+			downloadInBlob(url, "audio/mpeg", function(blob){
+				var result = {};
+				result.info = trackInfo;
+				result.data = blob;
+				callback(result);
+			});
 		});
 
 	}
@@ -40,9 +55,7 @@
 				+ CLIENT_ID
 			, function(data){
 				var resolveData = JSON.parse(data);
-				console.log(resolveData);
-				var trackId = resolveData.id;
-				fetchSoundById(trackId, callback);
+				fetchSound(resolveData, callback);
 		});
 	}
 
@@ -64,9 +77,11 @@
 	downloadButton.innerHTML = "Download";
 	buttonContainer.appendChild(downloadButton);
 
-	fetchSoundFromUrl(document.location.href, function(url){
+	fetchSoundFromUrl(document.location.href, function(result){
 		downloadButton.addEventListener('click', function(){
-			download(url, "track.mp3");
+			console.log(result.info);
+			var url = window.URL.createObjectURL(result.data);
+			download(url, result.info.title + ".mp3");
 		});
 	});
 
