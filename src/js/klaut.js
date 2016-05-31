@@ -145,8 +145,8 @@
 			&& info.release_year !== null){
 			result.year = info.release_year;
 		}else{
-			var domElement = document.querySelector(".fullListenHero__uploadTime.sc-type-medium > time");
-			if(domElement !== undefined){
+			var domElement = document.querySelector(".soundTitle__uploadTime > time");
+			if(domElement !== null){
 				var dateString = domElement.getAttribute("datetime"),
 				date = new Date(dateString);
 				result.year = date.getYear() + 1900;
